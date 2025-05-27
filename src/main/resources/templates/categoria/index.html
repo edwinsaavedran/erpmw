@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="layout :: layout">
+
+<section>
+    <h2>Categorías</h2>
+
+    <a class="btn btn-primary mb-3" th:href="@{/categorias/nuevo}">Nueva Categoría</a>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${categorias}">
+            <td th:text="${c.idCategoria}"></td>
+            <td th:text="${c.nombre}"></td>
+            <td th:text="${c.estado == 'A' ? 'Activo' : 'Inactivo'}"></td>
+            <td>
+                <a th:href="@{'/categorias/editar/' + ${c.idCategoria}}" class="btn btn-sm btn-warning">Editar</a>
+                <a th:href="@{'/categorias/eliminar/' + ${c.idCategoria}}" class="btn btn-sm btn-danger"
+                   onclick="return confirm('¿Eliminar esta categoría?')">Eliminar</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+</html>
