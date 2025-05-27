@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="layout :: layout">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout">
 
 <section>
     <h2 th:text="${categoria.idCategoria == null ? 'Nueva Categoría' : 'Editar Categoría'}"></h2>
 
-    <form th:action="@{/categorias/guardar}" th:object="${categoria}" method="post" class="row g-3 needs-validation" novalidate>
+    <form th:action="@{/categorias/guardar}" th:object="${categoria}" method="post"
+          class="row g-3 needs-validation" novalidate>
         <input type="hidden" th:field="*{idCategoria}"/>
 
         <div class="col-md-6">
