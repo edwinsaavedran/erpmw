@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo ?: 'Formulario Producto-Proveedor'}"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style> body { padding: 20px; } </style>
+</head>
+<body>
+    <div class="container">
+        <h1 th:text="${titulo ?: 'Formulario Producto-Proveedor'}"></h1>
+
+        <div th:if="${error_formulario}" class="alert alert-danger alert-dismissible fade show" role="alert" th:text="${error_formulario}"></div>
+
+        <form th:action="@{/productoproveedor/guardar}" th:object="${productoProveedor}" method="post" novalidate>
+            <input type="hidden" th:field="*{idProductoProveedor}"/>
+
+            <div class="mb-3">
+                <label for="producto" class="form-label">Producto <span class="text-danger">*</span></label>
+                <select id="producto" class="form-select" th:field="*{producto.idProducto}"
+                        th:classappend="${#fields.hasErrors('producto') || #fields.hasErrors('producto.idProducto')} ? 'is-invalid' : ''" required
+                        th:disabled="${productoProveedor.idProductoProveedor != null}"> <option value="">Seleccione un producto...</option>
+                    <option th:each="p : ${listaProductos}" th:value="${p.idProducto}" th:text="${p.nombre + ' (' + p.marca.nombre + ', ' + p.categoria.nombre + ')'}"></option>
+                </select>
+                <div th:if="${#fields.hasErrors('producto')}" class="invalid-feedback" th:errors="*{producto}"></div>
+                <div th:if="${#fields.hasErrors('producto.idProducto')}" class="invalid-feedback" th:errors="*{producto.idProducto}"></div>
+                <small th:if="${productoProveedor.idProductoProveedor != null}" class="form-text text-muted">El producto no se puede cambiar en modo edición.</small>
+            </div>
+
+            <div class="mb-3">
+                <label for="proveedor" class="form-label">Proveedor <span class="text-danger">*</span></label>
+                <select id="proveedor" class="form-select" th:field="*{proveedor.idProveedor}"
+                        th:classappend="${#fields.hasErrors('proveedor') || #fields.hasErrors('proveedor.idProveedor')} ? 'is-invalid' : ''" required
+                        th:disabled="${productoProveedor.idProductoProveedor != null}"> <option value="">Seleccione un proveedor...</option>
+                    <option th:each="prov : ${listaProveedores}" th:value="${prov.idProveedor}" th:text="${prov.nombre}"></option>
+                </select>
+                <div th:if="${#fields.hasErrors('proveedor')}" class="invalid-feedback" th:errors="*{proveedor}"></div>
+                 <div th:if="${#fields.hasErrors('proveedor.idProveedor')}" class="invalid-feedback" th:errors="*{proveedor.idProveedor}"></div>
+                 <small th:if="${productoProveedor.idProductoProveedor != null}" class="form-text text-muted">El proveedor no se puede cambiar en modo edición.</small>
+            </div>
+
+            <div class="mb-3">
+                <label for="stock" class="form-label">Stock <span class="text-danger">*</span></label>
+                <input type="number" id="stock" class="form-control" th:field="*{stock}" min="0"
+                       th:classappend="${#fields.hasErrors('stock')} ? 'is-invalid' : ''" required/>
+                <div th:if="${#fields.hasErrors('stock')}" class="invalid-feedback" th:errors="*{stock}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="precioUnitario" class="form-label">Precio Unitario <span class="text-danger">*</span></label>
+                <input type="number" id="precioUnitario" class="form-control" th:field="*{precioUnitario}" step="0.01" min="0"
+                       th:classappend="${#fields.hasErrors('precioUnitario')} ? 'is-invalid' : ''" required/>
+                <div th:if="${#fields.hasErrors('precioUnitario')}" class="invalid-feedback" th:errors="*{precioUnitario}"></div>
+            </div>
+
+            <div class="mb-3" th:if="${productoProveedor.idProductoProveedor != null}">
+                <label for="estado" class="form-label">Estado <span class="text-danger">*</span></label>
+                <select id="estado" class="form-select" th:field="*{estado}"
+                        th:classappend="${#fields.hasErrors('estado')} ? 'is-invalid' : ''" required>
+                    <option value="A">Activo</option>
+                    <option value="I">Inactivo</option>
+                </select>
+                <div th:if="${#fields.hasErrors('estado')}" class="invalid-feedback" th:errors="*{estado}"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+            <a th:href="@{/productoproveedor}" class="btn btn-secondary"><i class="fas fa-times"></i> Cancelar</a>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

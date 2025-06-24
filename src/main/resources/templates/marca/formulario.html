@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: baseLayout(~{::head}, ~{::#main-content-for-layout}, ~{::#page-specific-scripts})}">
+
+<head>
+    <title th:text="${titulo ?: 'Formulario de Marca'}">Formulario de Marca</title>
+</head>
+
+<body>
+    <div id="main-content-for-layout">
+        <h1 th:text="${titulo ?: 'Formulario de Marca'}">Formulario Marca</h1>
+
+        <div th:if="${error_formulario}" class="alert alert-danger alert-dismissible fade show" role="alert" th:text="${error_formulario}"></div>
+
+        <form th:action="@{/marcas/guardar}" th:object="${marca}" method="post" novalidate>
+            <input type="hidden" th:field="*{idMarca}"/>
+
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                <input type="text" id="nombre" class="form-control" th:field="*{nombre}"
+                       th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid' : ''"
+                       aria-describedby="nombreHelp" required/>
+                <div id="nombreHelp" class="form-text">Nombre único para la marca.</div>
+                <div th:if="${#fields.hasErrors('nombre')}" class="invalid-feedback" th:errors="*{nombre}"></div>
+            </div>
+
+            <div class="mb-3" th:if="${marca.idMarca != null}">
+                <label for="estado" class="form-label">Estado <span class="text-danger">*</span></label>
+                <select id="estado" class="form-select" th:field="*{estado}"
+                        th:classappend="${#fields.hasErrors('estado')} ? 'is-invalid' : ''" required>
+                    <option value="A">Activo</option>
+                    <option value="I">Inactivo</option>
+                </select>
+                <div th:if="${#fields.hasErrors('estado')}" class="invalid-feedback" th:errors="*{estado}"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Guardar
+            </button>
+            <a th:href="@{/marcas}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </form>
+    </div> <div id="page-specific-scripts">
+        </div>
+</body>
+</html>

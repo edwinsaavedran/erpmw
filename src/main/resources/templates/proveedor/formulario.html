@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: baseLayout(~{::head}, ~{::#main-content-for-layout}, ~{::#page-specific-scripts})}">
+
+<head>
+    <title th:text="${titulo ?: 'Formulario de Proveedor'}">Formulario de Proveedor</title>
+</head>
+
+<body>
+    <div id="main-content-for-layout">
+        <h1 th:text="${titulo ?: 'Formulario de Proveedor'}">Formulario Proveedor</h1>
+
+        <div th:if="${error_formulario}" class="alert alert-danger alert-dismissible fade show" role="alert" th:text="${error_formulario}"></div>
+
+        <form th:action="@{/proveedores/guardar}" th:object="${proveedor}" method="post" novalidate>
+            <input type="hidden" th:field="*{idProveedor}"/>
+
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                <input type="text" id="nombre" class="form-control" th:field="*{nombre}"
+                       th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid' : ''" required/>
+                <div th:if="${#fields.hasErrors('nombre')}" class="invalid-feedback" th:errors="*{nombre}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="ruc" class="form-label">RUC</label>
+                <input type="text" id="ruc" class="form-control" th:field="*{ruc}"
+                       th:classappend="${#fields.hasErrors('ruc')} ? 'is-invalid' : ''"/>
+                <div th:if="${#fields.hasErrors('ruc')}" class="invalid-feedback" th:errors="*{ruc}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input type="text" id="direccion" class="form-control" th:field="*{direccion}"
+                       th:classappend="${#fields.hasErrors('direccion')} ? 'is-invalid' : ''"/>
+                <div th:if="${#fields.hasErrors('direccion')}" class="invalid-feedback" th:errors="*{direccion}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" class="form-control" th:field="*{email}"
+                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"/>
+                <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback" th:errors="*{email}"></div>
+            </div>
+
+            <div class="mb-3" th:if="${proveedor.idProveedor != null}">
+                <label for="estado" class="form-label">Estado <span class="text-danger">*</span></label>
+                <select id="estado" class="form-select" th:field="*{estado}"
+                        th:classappend="${#fields.hasErrors('estado')} ? 'is-invalid' : ''" required>
+                    <option value="A">Activo</option>
+                    <option value="I">Inactivo</option>
+                </select>
+                <div th:if="${#fields.hasErrors('estado')}" class="invalid-feedback" th:errors="*{estado}"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Guardar
+            </button>
+            <a th:href="@{/proveedores}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </form>
+    </div> <div id="page-specific-scripts">
+        </div>
+</body>
+</html>

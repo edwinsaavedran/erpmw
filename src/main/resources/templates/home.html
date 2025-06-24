@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: baseLayout(~{::head}, ~{::#main-content-for-layout}, ~{::#page-specific-scripts})}">
+
+<head>
+    <title th:text="${titulo ?: 'Página de Inicio - ERP Compras'}">Página de Inicio</title>
+    <style>
+        .hero-section {
+            background-color: #e9ecef; /* Un fondo suave */
+            border-radius: .3rem;
+        }
+        .btn-group-lg > .btn, .btn-lg {
+            padding: .7rem 1.2rem;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main-content-for-layout">
+        <div class="px-4 py-5 my-4 text-center hero-section">
+            <h1 class="display-5 fw-bold" th:text="${titulo ?: 'Bienvenido'}"></h1>
+            <div class="col-lg-8 mx-auto">
+                <p class="lead mb-4">
+                    Este es el panel principal del módulo de compras de su sistema ERP.
+                    Desde aquí puede gestionar eficientemente todas las operaciones relacionadas con las adquisiciones,
+                    proveedores, productos y el seguimiento de sus órdenes de compra.
+                </p>
+                <p class="mb-4">
+                    Utilice la barra de navegación superior para acceder a las diferentes secciones del módulo.
+                </p>
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                    <a th:href="@{/ordenes/nueva}" type="button" class="btn btn-primary btn-lg px-4 gap-3">
+                        <i class="fas fa-file-medical"></i> Crear Nueva Orden
+                    </a>
+                    <a th:href="@{/ordenes}" type="button" class="btn btn-outline-secondary btn-lg px-4">
+                        <i class="fas fa-list-alt"></i> Ver Órdenes
+                    </a>
+                    <a th:href="@{/productos}" type="button" class="btn btn-outline-secondary btn-lg px-4">
+                        <i class="fas fa-box-open"></i> Gestionar Productos
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        </div> <div id="page-specific-scripts">
+        </div>
+</body>
+</html>

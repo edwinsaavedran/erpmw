@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo ?: 'Listado de Categorías'}">Listado de Categorías</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body { padding: 20px; }
+        .table { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 th:text="${titulo ?: 'Listado de Categorías'}">Listado de Categorías</h1>
+
+        <a th:href="@{/categorias/nuevo}" class="btn btn-primary mb-3">
+            <i class="fas fa-plus-circle"></i> Nueva Categoría
+        </a>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${error_lista}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error_lista}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${warning}" class="alert alert-warning alert-dismissible fade show" role="alert">
+            <span th:text="${warning}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cat : ${categorias}">
+                <td th:text="${cat.idCategoria}"></td>
+                <td th:text="${cat.nombre}"></td>
+                <td>
+                    <span th:if="${cat.estado == 'A'}" class="badge bg-success">Activo</span>
+                    <span th:if="${cat.estado == 'I'}" class="badge bg-danger">Inactivo</span>
+                </td>
+                <td>
+                    <a th:href="@{/categorias/editar/{id}(id=${cat.idCategoria})}" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <a th:if="${cat.estado == 'A'}" th:href="@{/categorias/desactivar/{id}(id=${cat.idCategoria})}"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('¿Está seguro de que desea desactivar esta categoría?');">
+                        <i class="fas fa-ban"></i> Desactivar
+                    </a>
+                    <a th:if="${cat.estado == 'I'}" th:href="@{/categorias/activar/{id}(id=${cat.idCategoria})}"
+                       class="btn btn-success btn-sm"
+                       onclick="return confirm('¿Está seguro de que desea activar esta categoría?');">
+                        <i class="fas fa-check-circle"></i> Activar
+                    </a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(categorias)}">
+                <td colspan="4" class="text-center">No hay categorías registradas.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

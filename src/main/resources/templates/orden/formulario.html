@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: baseLayout(~{::head}, ~{::#main-content-for-layout}, ~{::#page-specific-scripts})}">
+
+<head>
+    <title th:text="${titulo ?: 'Formulario de Orden de Compra'}">Formulario de Orden de Compra</title>
+    <style>
+        /* Estilos adicionales si son necesarios para el formulario dinámico */
+        .item-row {
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .item-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .total-section {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main-content-for-layout">
+        <h1 th:text="${titulo ?: 'Formulario de Orden de Compra'}"></h1>
+
+        <div th:if="${error_formulario}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error_formulario}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <form th:action="@{/ordenes/guardar}" th:object="${ordenCompraDTO}" method="post" id="ordenCompraForm" novalidate>
+            <input type="hidden" th:field="*{idOrdenCompra}" />
+
+            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger my-2" role="alert">
+                <strong>Errores Globales:</strong>
+                <ul>
+                    <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
+                </ul>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label for="fecha" class="form-label">Fecha <span class="text-danger">*</span></label>
+                    <input type="datetime-local" id="fecha" class="form-control" th:field="*{fecha}"
+                           th:classappend="${#fields.hasErrors('fecha')} ? 'is-invalid' : ''" required />
+                    <div th:if="${#fields.hasErrors('fecha')}" class="invalid-feedback" th:errors="*{fecha}"></div>
+                </div>
+                <div class="col-md-4">
+                    <label for="tipoPago" class="form-label">Tipo de Pago <span class="text-danger">*</span></label>
+                    <input type="text" id="tipoPago" class="form-control" th:field="*{tipoPago}"
+                           th:classappend="${#fields.hasErrors('tipoPago')} ? 'is-invalid' : ''" required />
+                    <div th:if="${#fields.hasErrors('tipoPago')}" class="invalid-feedback" th:errors="*{tipoPago}"></div>
+                </div>
+                <div class="col-md-4">
+                    <label for="moneda" class="form-label">Moneda <span class="text-danger">*</span></label>
+                    <select id="moneda" class="form-select" th:field="*{moneda}"
+                            th:classappend="${#fields.hasErrors('moneda')} ? 'is-invalid' : ''" required>
+                        <option value="">Seleccione Moneda...</option>
+                        <option value="PEN">PEN (Soles)</option>
+                        <option value="USD">USD (Dólares)</option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('moneda')}" class="invalid-feedback" th:errors="*{moneda}"></div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="observaciones" class="form-label">Observaciones</label>
+                <textarea id="observaciones" class="form-control" th:field="*{observaciones}" rows="3"
+                          th:classappend="${#fields.hasErrors('observaciones')} ? 'is-invalid' : ''"></textarea>
+                <div th:if="${#fields.hasErrors('observaciones')}" class="invalid-feedback" th:errors="*{observaciones}"></div>
+            </div>
+
+            <hr>
+            <h4>Detalles de la Orden <span class="text-danger">*</span></h4>
+            <div th:if="${#fields.hasErrors('detalles') && !#fields.hasGlobalErrors()}" class="alert alert-danger my-2">
+                <p th:each="err : ${#fields.errors('detalles')}" th:text="${err}"></p>
+            </div>
+
+
+            <div id="detalles-container">
+                <th:block th:each="detalle, iterStat : *{detalles}">
+                    <div class="item-row row gx-3 align-items-end mb-3">
+                        <div class="col-md-5">
+                            <label th:for="${'itemProductoProveedor-' + iterStat.index}" class="form-label">Producto/Proveedor <span class="text-danger">*</span></label>
+                            <select th:id="${'itemProductoProveedor-' + iterStat.index}" class="form-select item-producto-proveedor"
+                                    th:field="*{detalles[__${iterStat.index}__].idProductoProveedor}"
+                                    th:classappend="${#fields.hasErrors('detalles[__${iterStat.index}__].idProductoProveedor')} ? 'is-invalid' : ''" required>
+                                <option value="">Seleccione...</option>
+                                <option th:each="itemDisp : ${itemsDisponibles}"
+                                        th:value="${itemDisp.idProductoProveedor}"
+                                        th:text="${itemDisp.producto.nombre + ' - ' + itemDisp.proveedor.nombre + ' (S/ ' + #numbers.formatDecimal(itemDisp.precioUnitario,1,2) + ')'}"
+                                        th:attr="data-precio=${itemDisp.precioUnitario}">
+                                </option>
+                            </select>
+                            <div th:if="${#fields.hasErrors('detalles[__${iterStat.index}__].idProductoProveedor')}" class="invalid-feedback" th:errors="*{detalles[__${iterStat.index}__].idProductoProveedor}"></div>
+                        </div>
+                        <div class="col-md-2">
+                            <label th:for="${'itemCantidad-' + iterStat.index}" class="form-label">Cantidad <span class="text-danger">*</span></label>
+                            <input type="number" th:id="${'itemCantidad-' + iterStat.index}" class="form-control item-cantidad" min="1" value="1"
+                                   th:field="*{detalles[__${iterStat.index}__].cantidad}"
+                                   th:classappend="${#fields.hasErrors('detalles[__${iterStat.index}__].cantidad')} ? 'is-invalid' : ''" required />
+                             <div th:if="${#fields.hasErrors('detalles[__${iterStat.index}__].cantidad')}" class="invalid-feedback" th:errors="*{detalles[__${iterStat.index}__].cantidad}"></div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Precio Unit.</label>
+                            <input type="text" class="form-control item-precio-unitario" readonly 
+                                   th:value="*{detalles[__${iterStat.index}__].precioUnitarioItem != null ? #numbers.formatDecimal(detalles[__${iterStat.index}__].precioUnitarioItem,1,2,'POINT') : ''}" />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Subtotal</label>
+                            <input type="text" class="form-control item-subtotal" readonly 
+                                   th:value="*{detalles[__${iterStat.index}__].subtotal != null ? #numbers.formatDecimal(detalles[__${iterStat.index}__].subtotal,1,2,'POINT') : ''}"/>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger btn-sm remove-item-btn" title="Eliminar ítem">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+
+            <button type="button" id="btn-agregar-detalle" class="btn btn-success mt-2 mb-3">
+                <i class="fas fa-plus"></i> Agregar Ítem
+            </button>
+
+            <div id="detalle-template" class="item-row row gx-3 align-items-end mb-3" style="display: none;">
+                <div class="col-md-5">
+                    <label class="form-label">Producto/Proveedor <span class="text-danger">*</span></label>
+                    <select class="form-select item-producto-proveedor" data-name-template="detalles[#INDEX#].idProductoProveedor" required>
+                        <option value="">Seleccione...</option>
+                        <option th:each="itemDisp : ${itemsDisponibles}"
+                                th:value="${itemDisp.idProductoProveedor}"
+                                th:text="${itemDisp.producto.nombre + ' - ' + itemDisp.proveedor.nombre + ' (S/ ' + #numbers.formatDecimal(itemDisp.precioUnitario,1,2) + ')'}"
+                                th:attr="data-precio=${itemDisp.precioUnitario}">
+                        </option>
+                    </select>
+                     <div class="invalid-feedback">Debe seleccionar un producto/proveedor.</div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Cantidad <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control item-cantidad" min="1" value="1" data-name-template="detalles[#INDEX#].cantidad" required />
+                    <div class="invalid-feedback">La cantidad debe ser al menos 1.</div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Precio Unit.</label>
+                    <input type="text" class="form-control item-precio-unitario" readonly />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Subtotal</label>
+                    <input type="text" class="form-control item-subtotal" readonly />
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="button" class="btn btn-danger btn-sm remove-item-btn" title="Eliminar ítem">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <hr>
+            <div class="row justify-content-end">
+                <div class="col-md-3 text-end total-section">
+                    Total: S/ <span id="orden-total-display">0.00</span>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save"></i> Guardar Orden de Compra
+                </button>
+                <a th:href="@{/ordenes}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+
+        </form> </div> <div id="page-specific-scripts">
+        <script th:src="@{/js/orden_form.js}"></script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo ?: 'Formulario de Producto'}">Formulario de Producto</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body { padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 th:text="${titulo ?: 'Formulario de Producto'}">Formulario Producto</h1>
+
+        <div th:if="${error_formulario}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error_formulario}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <form th:action="@{/productos/guardar}" th:object="${producto}" method="post" novalidate>
+            <input type="hidden" th:field="*{idProducto}"/>
+
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                <input type="text" id="nombre" class="form-control" th:field="*{nombre}"
+                       th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid' : ''" required/>
+                <div th:if="${#fields.hasErrors('nombre')}" class="invalid-feedback" th:errors="*{nombre}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="marca" class="form-label">Marca <span class="text-danger">*</span></label>
+                <select id="marca" class="form-select" th:field="*{marca.idMarca}"
+                        th:classappend="${#fields.hasErrors('marca') || #fields.hasErrors('marca.idMarca')} ? 'is-invalid' : ''" required>
+                    <option value="">Seleccione una marca...</option>
+                    <option th:each="m : ${listaMarcas}" th:value="${m.idMarca}" th:text="${m.nombre}"></option>
+                </select>
+                <div th:if="${#fields.hasErrors('marca')}" class="invalid-feedback" th:errors="*{marca}"></div>
+                <div th:if="${#fields.hasErrors('marca.idMarca')}" class="invalid-feedback" th:errors="*{marca.idMarca}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="categoria" class="form-label">Categoría <span class="text-danger">*</span></label>
+                <select id="categoria" class="form-select" th:field="*{categoria.idCategoria}"
+                        th:classappend="${#fields.hasErrors('categoria') || #fields.hasErrors('categoria.idCategoria')} ? 'is-invalid' : ''" required>
+                    <option value="">Seleccione una categoría...</option>
+                    <option th:each="c : ${listaCategorias}" th:value="${c.idCategoria}" th:text="${c.nombre}"></option>
+                </select>
+                <div th:if="${#fields.hasErrors('categoria')}" class="invalid-feedback" th:errors="*{categoria}"></div>
+                <div th:if="${#fields.hasErrors('categoria.idCategoria')}" class="invalid-feedback" th:errors="*{categoria.idCategoria}"></div>
+            </div>
+
+            <div class="mb-3" th:if="${producto.idProducto != null}">
+                <label for="estado" class="form-label">Estado <span class="text-danger">*</span></label>
+                <select id="estado" class="form-select" th:field="*{estado}"
+                        th:classappend="${#fields.hasErrors('estado')} ? 'is-invalid' : ''" required>
+                    <option value="A">Activo</option>
+                    <option value="I">Inactivo</option>
+                </select>
+                <div th:if="${#fields.hasErrors('estado')}" class="invalid-feedback" th:errors="*{estado}"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Guardar
+            </button>
+            <a th:href="@{/productos}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

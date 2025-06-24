@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: baseLayout(~{::head}, ~{::#main-content-for-layout}, ~{::#page-specific-scripts})}">
+
+<head>
+    <title th:text="${titulo ?: 'Detalle de Orden de Compra'}"></title>
+</head>
+
+<body>
+    <div id="main-content-for-layout">
+        <div th:if="${ordenCompra != null}">
+            <h1 th:text="${'Detalle de Orden de Compra N° ' + ordenCompra.idOrdenCompra}"></h1>
+
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert" th:text="${error}"></div>
+            <div th:if="${warning}" class="alert alert-warning alert-dismissible fade show" role="alert" th:text="${warning}"></div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    Información General de la Orden
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>ID Orden:</strong> <span th:text="${ordenCompra.idOrdenCompra}"></span></p>
+                            <p><strong>Fecha:</strong> <span th:text="${#temporals.format(ordenCompra.fecha, 'dd/MM/yyyy HH:mm:ss')}"></span></p>
+                            <p><strong>Tipo de Pago:</strong> <span th:text="${ordenCompra.tipoPago}"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Moneda:</strong> <span th:text="${ordenCompra.moneda}"></span></p>
+                            <p><strong>Estado:</strong>
+                                <span th:switch="${ordenCompra.estado}">
+                                    <span th:case="'P'" class="badge bg-warning text-dark">Pendiente</span>
+                                    <span th:case="'A'" class="badge bg-info">Aprobada</span>
+                                    <span th:case="'R'" class="badge bg-success">Recibida</span>
+                                    <span th:case="'C'" class="badge bg-danger">Cancelada</span>
+                                    <span th:case="*" class="badge bg-secondary" th:text="${ordenCompra.estado}"></span>
+                                </span>
+                            </p>
+                            <p><strong>Total Orden:</strong> <strong th:text="${#numbers.formatDecimal(ordenCompra.total, 1, 'COMMA', 2, 'POINT')}"></strong></p>
+                        </div>
+                    </div>
+                    <hr>
+                    <p><strong>Observaciones:</strong></p>
+                    <p th:text="${!#strings.isEmpty(ordenCompra.observaciones) ? ordenCompra.observaciones : 'Ninguna'}"></p>
+                </div>
+            </div>
+
+            <h5>Detalles de la Orden</h5>
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Producto (Marca, Categoría)</th>
+                        <th>Proveedor</th>
+                        <th class="text-end">Cantidad</th>
+                        <th class="text-end">Precio Unit.</th>
+                        <th class="text-end">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="detalle, iterStat : ${ordenCompra.detalles}">
+                        <td th:text="${iterStat.count}"></td>
+                        <td>
+                            <span th:text="${detalle.productoProveedor?.producto?.nombre ?: 'N/A'}"></span>
+                            <small class="d-block text-muted"
+                                   th:if="${detalle.productoProveedor?.producto?.marca != null || detalle.productoProveedor?.producto?.categoria != null}">
+                                (<span th:text="${detalle.productoProveedor?.producto?.marca?.nombre ?: ''}"></span>,
+                                <span th:text="${detalle.productoProveedor?.producto?.categoria?.nombre ?: ''}"></span>)
+                            </small>
+                        </td>
+                        <td th:text="${detalle.productoProveedor?.proveedor?.nombre ?: 'N/A'}"></td>
+                        <td class="text-end" th:text="${detalle.cantidad}"></td>
+                        <td class="text-end" th:text="${#numbers.formatDecimal(detalle.productoProveedor?.precioUnitario, 1, 'COMMA', 2, 'POINT')}"></td>
+                        <td class="text-end" th:text="${#numbers.formatDecimal(detalle.subtotal, 1, 'COMMA', 2, 'POINT')}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(ordenCompra.detalles)}">
+                        <td colspan="6" class="text-center">Esta orden no tiene detalles.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="mt-3">
+                <a th:href="@{/ordenes}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver al Listado
+                </a>
+                </div>
+        </div>
+        <div th:if="${ordenCompra == null}" class="alert alert-warning">
+            No se encontró la orden de compra solicitada.
+        </div>
+    </div>
+
+    <div id="page-specific-scripts">
+        </div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - ERP Compras</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .login-form {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+            margin: auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <main class="login-form">
+        <form th:action="@{/login}" method="post">
+            <div class="text-center mb-4">
+                <h1 class="h3 mb-3 fw-normal">Iniciar Sesión</h1>
+                <p>Módulo de Compras</p>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <span th:text="${error}"></span>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success" role="alert">
+                <span th:text="${success}"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="username" name="username" placeholder="Usuario" required autofocus>
+                <label for="username">Nombre de Usuario</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
+                <label for="password">Contraseña</label>
+            </div>
+
+            <button class="w-100 btn btn-lg btn-primary" type="submit">Ingresar</button>
+            <p class="mt-5 mb-3 text-muted text-center">&copy; <span th:text="${#dates.year(#dates.createNow())}"></span></p>
+        </form>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
