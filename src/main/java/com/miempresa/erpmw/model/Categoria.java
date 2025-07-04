@@ -27,6 +27,16 @@ public class Categoria {
 
     // Constructores, Getters y Setters
     public Categoria() {}
+    public Categoria(Integer idCategoria, String nombre, Character estado) {
+        this.idCategoria = idCategoria;
+        this.nombre = nombre;
+        this.estado = estado;
+    }
+
+    public Categoria(String nombre, char estado) {
+        this.nombre = nombre;
+        this.estado = estado;
+    }
 
     public Integer getIdCategoria() { return idCategoria; }
     public void setIdCategoria(Integer idCategoria) { this.idCategoria = idCategoria; }
